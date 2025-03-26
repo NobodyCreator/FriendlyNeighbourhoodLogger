@@ -1,0 +1,6 @@
+@FriendlyNeighbourhoodLogger_HostAddress = http://localhost:5058
+
+GET {{FriendlyNeighbourhoodLogger_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
