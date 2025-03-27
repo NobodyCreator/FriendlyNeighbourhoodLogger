@@ -1,10 +1,6 @@
-0.0.1
+0.2
 
-Added Database
-Added Media.cs which just gives the end/set points that include:
-The Id of the media
-media type (movie, song, tv show, game etc)
-Title (name of the media i.e breaking bad)
-Media status (finished, pending, dropped, upcoming, backlog)
-Date Finished (date when it was done)
-Swagger is active
+MediaType and MediaStatus is restricted to specific enums:
+
+mediatype and mediastatus have specific statuses now that cannot be ignored
+if a update (PUT) is wrong then an error will display so.
