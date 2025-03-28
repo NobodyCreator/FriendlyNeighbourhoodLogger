@@ -1,6 +1,3 @@
-0.2
+0.3
 
-MediaType and MediaStatus is restricted to specific enums:
-
-mediatype and mediastatus have specific statuses now that cannot be ignored
-if a update (PUT) is wrong then an error will display so.
+Filtering on Type and Status by comparing premade enums 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FriendlyNeighbourhoodLogger;
+using FriendlyNeighbourhoodLogger.Enums;
 
 namespace FriendlyNeighbourhoodLogger.Controllers
 {
@@ -19,6 +20,30 @@ namespace FriendlyNeighbourhoodLogger.Controllers
         {
             return Ok(_context.Media.ToList());
         }
+
+        [HttpGet]
+        public IActionResult GetFilteredMedia([FromQuery] string? mediaType, [FromQuery] string? mediaStatus, [FromQuery] string? title)
+        {
+            var query = _context.Media.AsQueryable();
+
+            // converts to string query parametrs into enums
+            if (!string.IsNullOrEmpty(mediaType) && Enum.TryParse<MediaType>(mediaType, true, out var parsedMediaType))
+            {
+                query = query.Where(m => m.MediaType == parsedMediaType);
+            }
+            if (!string.IsNullOrEmpty(mediaStatus) && Enum.TryParse<MediaStatus>(mediaStatus, true, out var parsedMediaStatus))
+            {
+                query = query.Where(m => m.MediaStatus == parsedMediaStatus);
+            }
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                query = query.Where(m => m.Title.Contains(title));
+            }
+
+            return Ok(query.ToList());
+        }
+
 
         [HttpPost]
         public IActionResult AddMedia([FromBody] Media media)
