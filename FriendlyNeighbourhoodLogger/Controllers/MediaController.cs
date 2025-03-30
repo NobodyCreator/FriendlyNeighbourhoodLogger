@@ -22,7 +22,7 @@ namespace FriendlyNeighbourhoodLogger.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetFilteredMedia([FromQuery] string? mediaType, [FromQuery] string? mediaStatus, [FromQuery] string? title)
+        public IActionResult GetFilteredMedia([FromQuery] string? mediaType, [FromQuery] string? mediaStatus, [FromQuery] string? mediaTitle)
         {
             var query = _context.Media.AsQueryable();
 
@@ -36,9 +36,9 @@ namespace FriendlyNeighbourhoodLogger.Controllers
                 query = query.Where(m => m.MediaStatus == parsedMediaStatus);
             }
 
-            if (!string.IsNullOrEmpty(title))
+            if (!string.IsNullOrEmpty(mediaTitle))
             {
-                query = query.Where(m => m.Title.Contains(title));
+                query = query.Where(m => m.MediaTitle.Contains(mediaTitle));
             }
 
             return Ok(query.ToList());
@@ -70,7 +70,7 @@ namespace FriendlyNeighbourhoodLogger.Controllers
             var media = _context.Media.Find(id);
             if (media == null) return NotFound();
 
-            media.Title = updatedMedia.Title ?? media.Title;
+            media.MediaTitle = updatedMedia.MediaTitle ?? media.MediaTitle;
             media.MediaType = updatedMedia.MediaType != default ? updatedMedia.MediaType : media.MediaType;
             media.MediaStatus = updatedMedia.MediaStatus != default ? updatedMedia.MediaStatus : media.MediaStatus;
             media.DateFinished = updatedMedia.DateFinished != DateTime.MinValue

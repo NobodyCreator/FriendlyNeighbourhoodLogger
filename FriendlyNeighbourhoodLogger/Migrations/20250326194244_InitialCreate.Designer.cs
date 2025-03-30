@@ -37,7 +37,7 @@ namespace FriendlyNeighbourhoodLogger.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Title")
+                    b.Property<string>("MediaTitle")
                         .IsRequired()
                         .HasColumnType("TEXT");
 

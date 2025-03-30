@@ -1,3 +1,4 @@
-0.3
+0.4
 
-Filtering on Type and Status by comparing premade enums 
+- Added Frontend via Next.js (React) with Tailwind CSS
+- Support for HTTPS and CORS for secure API relationship

@@ -13,7 +13,7 @@ namespace FriendlyNeighbourhoodLogger
 
         [Required]
         [RegularExpression("^(Finished|Started|Backlogged|Skipped|Completed|Refunded)$", ErrorMessage = "Invalid MediaStatus. Finished,Started,Backlogged,Skipped,Completed,Refunded")]
-        public string Title { get; set; }//important
+        public required string MediaTitle { get; set; }//important
         public MediaStatus MediaStatus { get; set; }//dont care as user wont neceserray have a reason to give status
 
         public DateTime DateFinished { get; set; }

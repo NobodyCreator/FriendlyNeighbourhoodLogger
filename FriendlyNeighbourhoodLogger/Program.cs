@@ -1,32 +1,56 @@
 using Microsoft.EntityFrameworkCore;
-using FriendlyNeighbourhoodLogger; // Make sure this matches your namespace
+using FriendlyNeighbourhoodLogger;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-// Register AppDbContext with SQLite
+// Adding services to the container for future reference
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=mediaTracker.db"));
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+   // ifnore for now c.IncludeXmlComments(xmlPath);
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection(); //remember to disable this when not devving
+}
+
+
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
+}
+
 app.UseHttpsRedirection();
-
+app.UseCors("AllowFrontend");
 app.UseAuthorization();
-
 app.MapControllers();
+app.UseRouting();
 
 app.Run();

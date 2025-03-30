@@ -18,7 +18,7 @@ namespace FriendlyNeighbourhoodLogger.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     MediaType = table.Column<string>(type: "TEXT", nullable: false),
-                    Title = table.Column<string>(type: "TEXT", nullable: false),
+                    MediaTitle = table.Column<string>(type: "TEXT", nullable: false),
                     MediaStatus = table.Column<string>(type: "TEXT", nullable: false),
                     DateFinished = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
