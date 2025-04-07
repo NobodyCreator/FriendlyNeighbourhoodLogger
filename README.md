@@ -29,4 +29,30 @@ Media Tracker is a full-stack application for tracking and managing your favorit
 
 ## Getting Started
 
-Still work in progress (I will update as I go along)
+
+### **Backend Setup**
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/NobodyCreator/media-tracker.git
+   cd FriendlyNeighbourhoodLogger
+2. Build and run the application:
+   ```bash
+   dotnet run --launch-profile https
+3. Access Swagger UI for API documentation: https://localhost:7151/swagger.
+
+   ### **Frontend Setup**
+
+1. Navigate the frontend folder:
+```bash
+cd frontend
+```
+2. install dependencies:
+```bash
+npm install
+```
+3. start the dev server:
+```bash
+npm run dev
+```
+4. Access the frontend at: http://localhost:3000.
