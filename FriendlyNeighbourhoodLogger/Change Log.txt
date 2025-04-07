@@ -1,4 +1,6 @@
-0.4
+0.4.5
 
-- Added Frontend via Next.js (React) with Tailwind CSS
-- Support for HTTPS and CORS for secure API relationship
+- Updated MediaController routes for distinct endpoints (api/media/all, api/media/filtered) to resolve ambigiuities.
+- Updated DB schema to include the MediaTitle column using EF migration.
+- Applied CORS friendly configs for better backend/frontend relationship
+- Same with AXIOS 

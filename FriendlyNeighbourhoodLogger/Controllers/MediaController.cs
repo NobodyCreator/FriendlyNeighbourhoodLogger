@@ -15,18 +15,18 @@ namespace FriendlyNeighbourhoodLogger.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         public IActionResult GetAllMedia()
         {
             return Ok(_context.Media.ToList());
         }
 
-        [HttpGet]
+
+        [HttpGet("filtered")]
         public IActionResult GetFilteredMedia([FromQuery] string? mediaType, [FromQuery] string? mediaStatus, [FromQuery] string? mediaTitle)
         {
             var query = _context.Media.AsQueryable();
 
-            // converts to string query parametrs into enums
             if (!string.IsNullOrEmpty(mediaType) && Enum.TryParse<MediaType>(mediaType, true, out var parsedMediaType))
             {
                 query = query.Where(m => m.MediaType == parsedMediaType);
@@ -35,17 +35,18 @@ namespace FriendlyNeighbourhoodLogger.Controllers
             {
                 query = query.Where(m => m.MediaStatus == parsedMediaStatus);
             }
-
             if (!string.IsNullOrEmpty(mediaTitle))
             {
                 query = query.Where(m => m.MediaTitle.Contains(mediaTitle));
             }
 
             return Ok(query.ToList());
+            
+
         }
 
 
-        [HttpPost]
+        [HttpPost("add")]
         public IActionResult AddMedia([FromBody] Media media)
         {
             if (!ModelState.IsValid)
@@ -80,6 +81,20 @@ namespace FriendlyNeighbourhoodLogger.Controllers
             _context.SaveChanges();
 
             return NoContent();
+        }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateMediaItem([FromBody] Media media)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _context.Media.Add(media);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetMedia", new { id = media.Id }, media);
+
         }
 
 

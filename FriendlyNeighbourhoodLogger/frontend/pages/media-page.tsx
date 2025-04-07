@@ -6,7 +6,7 @@ const MediaPage: React.FC = () => {
 
     useEffect(() => {
         axios
-            .get('http://localhost:5058/api/media') // Replace <ASP.NET-Port> with your backend port.
+            .get('http://localhost:5058/api/media-page') // Replace <ASP.NET-Port> with your backend port.
             .then((response) => setMediaList(response.data))
             .catch((error) => console.error('Error fetching media:', error));
     }, []);
