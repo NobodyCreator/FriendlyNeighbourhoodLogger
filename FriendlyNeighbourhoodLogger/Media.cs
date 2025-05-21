@@ -1,5 +1,6 @@
 ﻿using FriendlyNeighbourhoodLogger.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FriendlyNeighbourhoodLogger
 {
@@ -8,7 +9,7 @@ namespace FriendlyNeighbourhoodLogger
     {
         public int Id { get; set; }
         [Required]
-        [RegularExpression("^(Movie|Show|Book|Game|Song)$", ErrorMessage = "Invalid MediaType. Movie,Show,Book,Game,Song")]
+        [RegularExpression("^(Movie|Show|Book|Game)$", ErrorMessage = "Invalid MediaType. Movie,Show,Book,Game")]
         public MediaType MediaType { get; set; } //important
 
         [Required]
@@ -17,5 +18,8 @@ namespace FriendlyNeighbourhoodLogger
         public MediaStatus MediaStatus { get; set; }//dont care as user wont neceserray have a reason to give status
 
         public DateTime DateFinished { get; set; }
+        [Required]
+        [ForeignKey("User")]
+        public string UserId { get; set; }
     }
 }

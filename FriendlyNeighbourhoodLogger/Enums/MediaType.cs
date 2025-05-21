@@ -5,7 +5,6 @@
         Movie,
         Show,
         Book,
-        Game,
-        Song
+        Game
     }
 }

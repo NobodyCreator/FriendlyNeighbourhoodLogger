@@ -45,7 +45,6 @@ export default function AddMediaForm() {
                     <option value="Show">Show</option>
                     <option value="Book">Book</option>
                     <option value="Game">Game</option>
-                    <option value="Song">Song</option>
                 </select>
             </label>
 

@@ -23,7 +23,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-   // ifnore for now c.IncludeXmlComments(xmlPath);
+   // ignore for now c.IncludeXmlComments(xmlPath);
 });
 
 var app = builder.Build();

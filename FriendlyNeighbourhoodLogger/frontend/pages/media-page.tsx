@@ -15,7 +15,7 @@ const MediaPage: React.FC = () => {
 
     useEffect(() => {
         axios
-            .get('https://localhost:7151/api/media/all') // Updated URL
+            .get('https://localhost:7151/api/media/all') 
             .then((response) => {
                 setMediaList(response.data);
             })
