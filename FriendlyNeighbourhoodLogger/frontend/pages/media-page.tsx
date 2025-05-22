@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { mediaTypeLabels, mediaStatusLabels } from "../src/utils/mediaLabels";
 import axios from 'axios';
 
 interface Media {
@@ -9,21 +10,22 @@ interface Media {
     dateFinished: string;
 }
 
+
+
 const MediaPage: React.FC = () => {
     const [mediaList, setMediaList] = useState<Media[]>([]); // Set the correct type for state
     const [error, setError] = useState<string | null>(null); // Handle errors gracefully
 
     useEffect(() => {
-        axios
-            .get('https://localhost:7151/api/media/all') 
-            .then((response) => {
-                setMediaList(response.data);
-            })
+        axios.get("https://localhost:7151/api/media/all")
+            .then((response) => setMediaList(response.data))
             .catch((error) => {
-                console.error('Error fetching media:', error);
-                setError('Failed to fetch media. Please check the backend.');
+                console.error("Error fetching media:", error);
+                setError("Failed to fetch media. Please check the backend.");
             });
     }, []);
+
+
 
 
     return (
@@ -33,13 +35,14 @@ const MediaPage: React.FC = () => {
             <ul>
                 {mediaList.map((media) => (
                     <li key={media.id}>
-                        {media.mediaTitle} ({media.mediaType} - {media.mediaStatus})
+                        {media.mediaTitle} ({mediaTypeLabels[Number(media.mediaType)] || "Unknown"} - {mediaStatusLabels[Number(media.mediaStatus)] || "Unknown"})
                     </li>
                 ))}
             </ul>
-        </div>
 
+        </div>
     );
 };
+
 
 export default MediaPage;

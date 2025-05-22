@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using FriendlyNeighbourhoodLogger;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,25 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
+// builder.Services.AddAuthentication("Bearer")
+//     .AddJwtBearer(options =>
+//     {
+//         options.Authority = "https://your-auth-provider.com";
+//         options.Audience = "your-api-audience";
+//         options.RequireHttpsMetadata = false;
+//         options.TokenValidationParameters = new TokenValidationParameters
+//         {
+//             ValidateIssuer = false, 
+//             ValidateAudience = false, 
+//             ValidateLifetime = false, 
+//             ValidateIssuerSigningKey = false
+//         };
+//     });
+
+//.Services.AddAuthorization(); // 
+
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -49,7 +70,11 @@ using (var scope = app.Services.CreateScope())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
-app.UseAuthorization();
+
+app.UseRouting();
+//app.UseAuthentication();
+//app.UseAuthorization();
+
 app.MapControllers();
 app.UseRouting();
 
