@@ -2,11 +2,10 @@
 {
     public enum MediaStatus
     {
-        Finished,
-        Started,
-        Backlogged,
-        Skipped,
-        Completed,
-        Refunded
+        Finished = 0,
+        Started = 1,
+        Backlogged = 2,
+        Skipped = 3,
+        Refunded = 4
     }
 }

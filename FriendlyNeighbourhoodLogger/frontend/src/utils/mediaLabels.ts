@@ -10,6 +10,5 @@ export const mediaStatusLabels: Record<number, string> = {
     1: "Started",
     2: "Backlogged",
     3: "Skipped",
-    4: "Completed",
-    5: "Refunded"
+    4: "Refunded"
 };

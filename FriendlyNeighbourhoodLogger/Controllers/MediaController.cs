@@ -5,7 +5,7 @@ using FriendlyNeighbourhoodLogger.Enums;
 namespace FriendlyNeighbourhoodLogger.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/media")]
     public class MediaController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -45,13 +45,18 @@ namespace FriendlyNeighbourhoodLogger.Controllers
         [HttpPost("add")]
         public IActionResult AddMedia([FromBody] Media media)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!Enum.TryParse<MediaType>(media.MediaType.ToString(), true, out var parsedMediaType))
+            {
+                return BadRequest("Invalid MediaType. Use 'Movie', 'Show', 'Book', or 'Game'.");
+            }
 
+            media.MediaType = parsedMediaType;
             _context.Media.Add(media);
             _context.SaveChanges();
 
             return CreatedAtAction(nameof(GetAllMedia), new { id = media.Id }, media);
         }
+
 
         [HttpPut("{id}")]
         public IActionResult UpdateMedia(int id, [FromBody] Media updatedMedia)

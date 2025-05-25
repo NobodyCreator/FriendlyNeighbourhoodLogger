@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { mediaTypeLabels, mediaStatusLabels } from "../src/utils/mediaLabels";
 import axios from 'axios';
+import MediaModal from "../src/components/MediaModal";
+import AddMediaForm from "../src/components/AddMediaForm";
 
 interface Media {
     id: number;
@@ -10,14 +12,15 @@ interface Media {
     dateFinished: string;
 }
 
-
+console.log("Loaded API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
 
 const MediaPage: React.FC = () => {
     const [mediaList, setMediaList] = useState<Media[]>([]); // Set the correct type for state
     const [error, setError] = useState<string | null>(null); // Handle errors gracefully
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        axios.get("https://localhost:7151/api/media/all")
+        axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/media/all`)
             .then((response) => setMediaList(response.data))
             .catch((error) => {
                 console.error("Error fetching media:", error);
@@ -27,11 +30,21 @@ const MediaPage: React.FC = () => {
 
 
 
-
     return (
         <div>
             <h1>Media Tracker</h1>
-            {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display errors if any */}
+            {error && <p style={{ color: "red" }}>{error}</p>}
+
+            {/*  Add button to open modal */}
+            <button className="bg-green-500 text-white px-4 py-2 rounded mb-4" onClick={() => setIsModalOpen(true)}>
+                Add New Media
+            </button>
+
+            <MediaModal isOpen={isModalOpen} onCloseAction={() => setIsModalOpen(false)}>
+                <AddMediaForm />
+            </MediaModal>
+
+
             <ul>
                 {mediaList.map((media) => (
                     <li key={media.id}>
@@ -39,10 +52,8 @@ const MediaPage: React.FC = () => {
                     </li>
                 ))}
             </ul>
-
         </div>
     );
-};
-
+}
 
 export default MediaPage;
