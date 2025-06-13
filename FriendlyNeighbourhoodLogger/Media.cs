@@ -13,7 +13,7 @@ namespace FriendlyNeighbourhoodLogger
         public MediaType MediaType { get; set; }  
 
         [Required]
-        public string MediaTitle { get; set; }
+        public required  string MediaTitle { get; set; }
 
         public MediaStatus MediaStatus { get; set; } 
 
