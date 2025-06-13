@@ -8,7 +8,7 @@ interface EditMediaProps {
     media: {
         id: number;
         mediaTitle: string;
-        mediaStatus: string;
+        mediaStatus: string; 
         dateFinished: string;
     };
     onCloseAction: () => void;
@@ -16,34 +16,52 @@ interface EditMediaProps {
 }
 
 
+
 export default function EditMediaModal({ media, onCloseAction, onUpdateAction }: EditMediaProps) {
     const [mediaTitle, setMediaTitle] = useState(media.mediaTitle);
     const [mediaStatus, setMediaStatus] = useState(media.mediaStatus); 
     const [dateFinished, setDateFinished] = useState(media.dateFinished);
 
+
     const handleUpdate = async () => {
         try {
-            const payload = {
-                updatedMedia: {
-                    mediaTitle,
-                    mediaStatus,
-                    dateFinished: mediaStatus === "Finished" ? dateFinished : null,
-                    userId: "checkanator" // Sending a placeholder userId
-                }
+            const mediaStatusMap: Record<string, number> = {
+                Finished: 0,
+                Started: 1,
+                Backlogged: 2,
+                Skipped: 3,
+                Refunded: 4
             };
 
-            console.log("Sending request:", payload); // Debugging log to verify payload
+            const payload = {
+                mediaTitle,
+                mediaStatus: mediaStatusMap[mediaStatus],
+                userId: "checkanator",
+                dateFinished: dateFinished ? new Date(dateFinished).toISOString() : "0001-01-01T00:00:00Z" 
+            };
+
+            console.log("Sending request:", JSON.stringify(payload, null, 2)); //  Debugging log for verification
 
             await axios.put(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/media/${media.id}`, payload);
 
             onUpdateAction();
             onCloseAction();
         } catch (error) {
-            const axiosError = error as AxiosError; // Explicitly cast error to AxiosError
+            const axiosError = error as AxiosError;
             console.error("Error updating media:", axiosError.response?.data || axiosError.message);
         }
-
     };
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -72,18 +90,25 @@ export default function EditMediaModal({ media, onCloseAction, onUpdateAction }:
                         <option value="Skipped">Skipped</option>
                         <option value="Refunded">Refunded</option>
                     </select>
-
                 </label>
 
                 {mediaStatus === "Finished" && (
                     <label>
                         Finished Date:
-                        <input type="date" value={dateFinished} onChange={(e) => setDateFinished(e.target.value)} className="border p-2 w-full" />
+                        <input
+                            type="date"
+                            value={dateFinished}
+                            onChange={(e) => setDateFinished(e.target.value)}
+                            className="border p-2 w-full"
+                            required // Ensure it's required only when "Finished" is selected
+                        />
                     </label>
                 )}
+
 
                 <button onClick={handleUpdate} className="bg-blue-500 text-white p-2 rounded mt-4">Update</button>
             </div>
         </div>
     );
 }
+
