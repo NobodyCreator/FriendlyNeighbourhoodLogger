@@ -11,6 +11,7 @@ interface Media {
     mediaType: number;
     mediaStatus: number;
     dateFinished: string;
+    dateStarted?: string;
     userId: string;
     coverImageUrl?: string;
     genres?: string;
@@ -113,6 +114,17 @@ const MediaPage: React.FC = () => {
                                 <span>
                                     Status: <strong>{mediaStatusLabels[+media.mediaStatus]}</strong>
                                 </span>
+                                {media.dateStarted && (
+                                    <span>
+                                        Started on:{" "}
+                                        {new Date(media.dateStarted).toLocaleDateString(undefined, {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                        })}
+                                    </span>
+                                )}
+
                                 {media.dateFinished && (
                                     <span>
                                         Finished on:{" "}
@@ -122,10 +134,27 @@ const MediaPage: React.FC = () => {
                                             day: "numeric",
                                         })}
                                     </span>
+
+
+
                                 )}
                                 {/* Only show when user login is active */}
                                 {/* <span>User: {media.userId}</span> */}
                             </div>
+                            {media.dateStarted && media.dateFinished && (() => {
+                                const start = new Date(media.dateStarted);
+                                const end = new Date(media.dateFinished);
+                                const diffHours = Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60));
+
+                                if (diffHours >= 0) {
+                                    return (
+                                        <p className="text-xs text-gray-600 italic">
+                                            Finished in {diffHours} {diffHours === 1 ? "hour" : "hours"}
+                                        </p>
+                                    );
+                                }
+                                return null;
+                            })()}
 
                             <button
                                 onClick={() => setSelectedMedia(media)}

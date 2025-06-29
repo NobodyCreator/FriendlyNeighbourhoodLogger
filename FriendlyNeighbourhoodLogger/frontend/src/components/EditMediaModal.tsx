@@ -9,6 +9,7 @@ interface Media {
     mediaStatus: string | number;
     mediaType: number;
     dateFinished?: string;
+    dateStarted?: string;
 }
 
 
@@ -55,6 +56,10 @@ export default function EditMediaModal({
             ? new Date().toISOString().split("T")[0]
             : "")
     );
+    const [dateStarted, setDateStarted] = useState<string>(
+        media.dateStarted || (initialStatus === "Started" ? new Date().toISOString().split("T")[0] : "")
+    );
+
 
 
 
@@ -66,6 +71,14 @@ export default function EditMediaModal({
             setDateFinished(""); // wipe it out if switching away from "Finished"
         }
     }, [mediaStatus]);
+    useEffect(() => {
+        if (mediaStatus === "Started" && !dateStarted) {
+            setDateStarted(new Date().toISOString().split("T")[0]);
+        } else if (mediaStatus !== "Started") {
+            setDateStarted("");
+        }
+    }, [mediaStatus]);
+
 
 
     const handleUpdate = async () => {
@@ -73,7 +86,7 @@ export default function EditMediaModal({
             const payload = {
                 mediaTitle,
                 mediaStatus: mediaStatusMap[mediaStatus],
-                mediaType: media.mediaType, // explicit to avoid re-defaulting on update
+                mediaType: media.mediaType,
                 userId: "checkanator",
                 ...(mediaStatus === "Finished"
                     ? {
@@ -82,7 +95,15 @@ export default function EditMediaModal({
                             : new Date().toISOString(),
                     }
                     : { dateFinished: null }),
+                ...(mediaStatus === "Started"
+                    ? {
+                        dateStarted: dateStarted?.trim()
+                            ? new Date(dateStarted).toISOString()
+                            : new Date().toISOString(),
+                    }
+                    : { dateStarted: null }),
             };
+
 
 
             console.log("Sending payload:", JSON.stringify(payload, null, 2));
@@ -172,6 +193,20 @@ export default function EditMediaModal({
                         />
                     </label>
                 )}
+                {mediaStatus === "Started" && (
+                    <label className="block mb-2">
+                        Start Date:
+                        <input
+                            type="date"
+                            value={dateStarted}
+                            onChange={(e) => setDateStarted(e.target.value)}
+                            max={new Date().toISOString().split("T")[0]}
+                            className="border p-2 w-full"
+                            required
+                        />
+                    </label>
+                )}
+
 
                 <div className="flex justify-between mt-4">
                     <button

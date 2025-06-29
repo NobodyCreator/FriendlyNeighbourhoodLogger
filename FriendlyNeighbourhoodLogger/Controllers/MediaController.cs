@@ -29,6 +29,7 @@ namespace FriendlyNeighbourhoodLogger.Controllers
                     m.MediaTitle,
                     m.MediaType,
                     m.MediaStatus,
+                    m.DateStarted,
                     m.DateFinished,
                     Metadata = m.Metadata != null
                         ? new
@@ -116,8 +117,10 @@ namespace FriendlyNeighbourhoodLogger.Controllers
 
             media.MediaTitle = updatedMedia.MediaTitle ?? media.MediaTitle;
             media.MediaType = updatedMedia.MediaType != default ? updatedMedia.MediaType : media.MediaType;
-            media.MediaStatus = updatedMedia.MediaStatus != default ? updatedMedia.MediaStatus : media.MediaStatus;
+            media.MediaStatus = updatedMedia.MediaStatus;
             media.DateFinished = updatedMedia.DateFinished != DateTime.MinValue ? updatedMedia.DateFinished : media.DateFinished;
+            media.DateStarted = updatedMedia.DateStarted != DateTime.MinValue ? updatedMedia.DateStarted : media.DateStarted;
+
 
             _context.SaveChanges();
             return NoContent();

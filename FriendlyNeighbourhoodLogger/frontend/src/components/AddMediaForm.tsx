@@ -17,6 +17,8 @@ const AddMediaForm = () => {
     const [gameData, setGameData] = useState<Game | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [dateFinished, setDateFinished] = useState<string>("");
+    const [dateStarted, setDateStarted] = useState<string>("");
+
 
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const debouncedFetch = useRef(
@@ -51,6 +53,23 @@ const AddMediaForm = () => {
             setShowDropdown(false);
         }
     };
+
+    {
+        mediaStatus === "Started" && (
+            <label className="block mb-4">
+                Start Date:
+                <input
+                    type="date"
+                    value={dateStarted}
+                    onChange={(e) => setDateStarted(e.target.value)}
+                    className="block w-full mt-1 p-2 border rounded"
+                    max={new Date().toISOString().split("T")[0]}
+                    required
+                />
+            </label>
+        )
+    }
+
 
     useEffect(() => {
         if (mediaStatus === "Finished") {
@@ -92,6 +111,10 @@ const AddMediaForm = () => {
                 dateFinished: mediaStatus === "Finished"
                     ? new Date(dateFinished || new Date().toISOString()).toISOString()
                     : null,
+                dateStarted: mediaStatus === "Started"
+                        ? new Date(dateStarted || new Date().toISOString()).toISOString()
+                        : null,
+
                 userId: "checkanator",
                 description: gameData?.summary || "",
                 coverImageUrl: gameData?.cover?.url || "",

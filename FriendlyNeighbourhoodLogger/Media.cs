@@ -27,6 +27,8 @@ namespace FriendlyNeighbourhoodLogger
 
         public MediaStatus MediaStatus { get; set; }
 
+        public DateTime? DateStarted { get; set; }
+
         public DateTime? DateFinished { get; set; }
 
         [Required]
