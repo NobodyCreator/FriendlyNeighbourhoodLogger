@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using FriendlyNeighbourhoodLogger;
+using FriendlyNeighbourhoodLogger.Services;
 using FriendlyNeighbourhoodLogger.Enums;
 
 namespace FriendlyNeighbourhoodLogger.Controllers
@@ -9,18 +10,43 @@ namespace FriendlyNeighbourhoodLogger.Controllers
     public class MediaController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly MetadataService _metadataService;
 
-        public MediaController(AppDbContext context)
+        public MediaController(AppDbContext context, MetadataService metadataService)
         {
             _context = context;
+            _metadataService = metadataService;
+
         }
 
         [HttpGet("all")]
         public IActionResult GetAllMedia()
         {
-            var userMedia = _context.Media.ToList(); 
+            var userMedia = _context.Media
+                .Select(m => new
+                {
+                    m.Id,
+                    m.MediaTitle,
+                    m.MediaType,
+                    m.MediaStatus,
+                    m.DateFinished,
+                    Metadata = m.Metadata != null
+                        ? new
+                        {
+                            m.Metadata.Title,
+                            m.Metadata.Description,
+                            m.Metadata.CoverImageUrl,
+                            m.Metadata.Genres,
+                            m.Metadata.DataSource,
+                            m.Metadata.ExternalMediaId
+                        }
+                        : null
+                }).ToList();
+
             return Ok(userMedia);
         }
+
+
 
         [HttpGet("filtered")]
         public IActionResult GetFilteredMedia([FromQuery] string? mediaType, [FromQuery] string? mediaStatus, [FromQuery] string? mediaTitle)
@@ -43,22 +69,42 @@ namespace FriendlyNeighbourhoodLogger.Controllers
         }
 
         [HttpPost("add")]
-        public IActionResult AddMedia([FromBody] Media media)
+        public async Task<IActionResult> AddMedia([FromBody] Media media)
         {
-            //  Remove this entire validation block:
-            // if (!Enum.TryParse<MediaType>(media.MediaType.ToString(), true, out var parsedMediaType))
-            // {
-            //     return BadRequest("Invalid MediaType...");
-            // }
+            // This assumes frontend sends ExternalMediaId + DataSource + fallback metadata fields
+            if (media.Metadata != null)
+            {
+                var metadata = await _metadataService.GetOrAddMetadataAsync(
+                    media.Metadata.ExternalMediaId,
+                    media.Metadata.DataSource,
+                    new UnifiedMediaMetadata
+                    {
+                        ExternalMediaId = media.Metadata.ExternalMediaId,
+                        DataSource = media.Metadata.DataSource,
+                        Title = media.Metadata.Title,
+                        Description = media.Metadata.Description,
+                        CoverImageUrl = media.Metadata.CoverImageUrl,
+                        Genres = media.Metadata.Genres
+                    });
 
-            // This is no longer needed as it's redundant:
-            // media.MediaType = parsedMediaType;
+                media.MetadataId = metadata.Id;
+            }
 
             _context.Media.Add(media);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetAllMedia), new { id = media.Id }, media);
         }
+
+
+        //  Remove this entire validation block:
+        // if (!Enum.TryParse<MediaType>(media.MediaType.ToString(), true, out var parsedMediaType))
+        // {
+        //     return BadRequest("Invalid MediaType...");
+        // }
+
+        // This is no longer needed as it's redundant:
+        // media.MediaType = parsedMediaType;
 
 
 
@@ -68,7 +114,6 @@ namespace FriendlyNeighbourhoodLogger.Controllers
             var media = _context.Media.FirstOrDefault(m => m.Id == id);
             if (media == null) return NotFound();
 
-            // Update only provided fields
             media.MediaTitle = updatedMedia.MediaTitle ?? media.MediaTitle;
             media.MediaType = updatedMedia.MediaType != default ? updatedMedia.MediaType : media.MediaType;
             media.MediaStatus = updatedMedia.MediaStatus != default ? updatedMedia.MediaStatus : media.MediaStatus;
@@ -77,6 +122,7 @@ namespace FriendlyNeighbourhoodLogger.Controllers
             _context.SaveChanges();
             return NoContent();
         }
+
 
         [HttpDelete("{id}")]
         public IActionResult DeleteMedia(int id)
@@ -88,5 +134,6 @@ namespace FriendlyNeighbourhoodLogger.Controllers
             _context.SaveChanges();
             return NoContent();
         }
+
     }
 }

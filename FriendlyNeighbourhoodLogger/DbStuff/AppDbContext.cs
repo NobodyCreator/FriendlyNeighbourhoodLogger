@@ -7,7 +7,7 @@ namespace FriendlyNeighbourhoodLogger
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
-
+        public DbSet<UnifiedMediaMetadata> UnifiedMediaMetadata { get; set; }
         public DbSet<Media> Media { get; set; }
     }
 }

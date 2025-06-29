@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using FriendlyNeighbourhoodLogger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.IdentityModel.Tokens;
+using FriendlyNeighbourhoodLogger.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data Source=mediaTracker.db"));
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<MetadataService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>

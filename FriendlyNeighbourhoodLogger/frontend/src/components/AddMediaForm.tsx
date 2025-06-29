@@ -10,7 +10,7 @@ import { fetchGameDetails, Game } from "../services/igdbService";
 const AddMediaForm = () => {
     const [mediaType, setMediaType] = useState("Game");
     const [mediaTitle, setMediaTitle] = useState("");
-    const [mediaStatus, setMediaStatus] = useState("");
+    const [mediaStatus, setMediaStatus] = useState("Started");
     const [searchQuery, setSearchQuery] = useState("");
     const [searchResults, setSearchResults] = useState<Game[]>([]);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -89,19 +89,22 @@ const AddMediaForm = () => {
                 mediaType: mediaTypeMap[mediaType],
                 mediaTitle,
                 mediaStatus: mediaStatusMap[mediaStatus],
-               ...(mediaStatus === "Finished" && dateFinished
-  ? { dateFinished: new Date(dateFinished).toISOString() }
-  : {}),
-
-                userId: "checkanator"
+                dateFinished: mediaStatus === "Finished"
+                    ? new Date(dateFinished || new Date().toISOString()).toISOString()
+                    : null,
+                userId: "checkanator",
+                description: gameData?.summary || "",
+                coverImageUrl: gameData?.cover?.url || "",
+                genres: gameData?.genres?.map(g => g.name).join(", ") || ""
             });
+
 
             console.log("Media added:", response.data);
 
             window.dispatchEvent(new Event("mediaUpdated"));
 
             // Reset form
-            setMediaType("");
+            setMediaType("Game");//remember to replace with setMediaType(""); later
             setMediaTitle("");
             setMediaStatus("");
             setSearchQuery("");

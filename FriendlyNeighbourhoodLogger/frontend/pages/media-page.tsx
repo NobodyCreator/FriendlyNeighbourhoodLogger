@@ -8,10 +8,15 @@ import EditMediaModal from "../src/components/EditMediaModal";
 interface Media {
     id: number;
     mediaTitle: string;
-    mediaType: string;
-    mediaStatus: string;
+    mediaType: number;
+    mediaStatus: number;
     dateFinished: string;
+    userId: string;
+    coverImageUrl?: string;
+    genres?: string;
+    description?: string;
 }
+
 
 console.log("Loaded API Base URL:", process.env.NEXT_PUBLIC_API_BASE_URL);
 
@@ -75,22 +80,63 @@ const MediaPage: React.FC = () => {
             </MediaModal>
 
 
-            <ul>
+            <section className="grid gap-4">
                 {mediaList.map((media) => (
-                    <li key={media.id}>
-                        {media.mediaTitle} ({mediaTypeLabels[Number(media.mediaType)] || "Unknown"} -{" "}
-                        {mediaStatusLabels[Number(media.mediaStatus)] || "Unknown"})
-                        {Number(media.mediaStatus) === 0 && (
-                            <p className="text-gray-500">Finished on: {new Date(media.dateFinished).toLocaleDateString()}</p>
-                        )}
+                    <div key={media.id} className="border p-4 rounded shadow-sm bg-white flex gap-4">
+                        <div className="flex flex-col items-center justify-start min-w-[80px]">
+                            <span className="text-xs font-semibold text-gray-500 uppercase">
+                                {mediaTypeLabels[+media.mediaType] || "Unknown"}
+                            </span>
+                            {media.coverImageUrl && (
+                                <img
+                                    src={media.coverImageUrl}
+                                    alt={media.mediaTitle}
+                                    className="w-24 h-24 object-cover mt-2 rounded"
+                                />
+                            )}
+                        </div>
 
-                        {/* Open edit modal */}
-                        <button onClick={() => setSelectedMedia(media)} className="bg-yellow-500 text-white p-2 rounded">
-                            Edit
-                        </button>
-                    </li>
+                        <div className="flex-1">
+                            <h3 className="text-lg font-bold">{media.mediaTitle}</h3>
+
+                            {media.genres && (
+                                <p className="text-sm text-gray-600 mb-1">
+                                    <span className="font-medium">Genres:</span> {media.genres}
+                                </p>
+                            )}
+
+                            {media.description && (
+                                <p className="text-sm text-gray-700 mb-2">{media.description}</p>
+                            )}
+
+                            <div className="text-sm text-gray-500 flex flex-wrap items-center gap-3 mb-2">
+                                <span>
+                                    Status: <strong>{mediaStatusLabels[+media.mediaStatus]}</strong>
+                                </span>
+                                {media.dateFinished && (
+                                    <span>
+                                        Finished on:{" "}
+                                        {new Date(media.dateFinished).toLocaleDateString(undefined, {
+                                            year: "numeric",
+                                            month: "short",
+                                            day: "numeric",
+                                        })}
+                                    </span>
+                                )}
+                                {/* Only show when user login is active */}
+                                {/* <span>User: {media.userId}</span> */}
+                            </div>
+
+                            <button
+                                onClick={() => setSelectedMedia(media)}
+                                className="bg-yellow-500 text-white px-4 py-1 rounded"
+                            >
+                                Edit
+                            </button>
+                        </div>
+                    </div>
                 ))}
-            </ul>
+            </section>
 
             {/* Edit modal */}
             {selectedMedia && (
