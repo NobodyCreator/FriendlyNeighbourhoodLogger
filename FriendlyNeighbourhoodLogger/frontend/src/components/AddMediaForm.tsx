@@ -8,7 +8,7 @@ import { fetchGameDetails, Game } from "../services/igdbService";
 
 
 const AddMediaForm = () => {
-    const [mediaType, setMediaType] = useState("");
+    const [mediaType, setMediaType] = useState("Game");
     const [mediaTitle, setMediaTitle] = useState("");
     const [mediaStatus, setMediaStatus] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
@@ -89,9 +89,9 @@ const AddMediaForm = () => {
                 mediaType: mediaTypeMap[mediaType],
                 mediaTitle,
                 mediaStatus: mediaStatusMap[mediaStatus],
-                ...(mediaStatus === "Finished" && dateFinished
-                    ? { dateFinished: new Date(dateFinished).toISOString() }
-                    : {}),
+               ...(mediaStatus === "Finished" && dateFinished
+  ? { dateFinished: new Date(dateFinished).toISOString() }
+  : {}),
 
                 userId: "checkanator"
             });
@@ -118,18 +118,25 @@ const AddMediaForm = () => {
 
             <label className="block mb-2">
                 Media Type:
-                <select
-                    value={mediaType}
-                    onChange={(e) => setMediaType(e.target.value)}
-                    className="block w-full mt-1 p-2 border rounded"
-                    required
-                >
-                    <option value="" disabled>Select Media Type</option>
-                    <option value="Movie">Movie</option>
-                    <option value="Show">Show</option>
-                    <option value="Book">Book</option>
-                    <option value="Game">Game</option>
-                </select>
+                {/*
+<select
+  value={mediaType}
+  onChange={(e) => setMediaType(e.target.value)}
+  className="block w-full mt-1 p-2 border rounded"
+  required
+>
+  <option value="" disabled>Select Media Type</option>
+  <option value="Movie">Movie</option>
+  <option value="Show">Show</option>
+  <option value="Book">Book</option>
+  <option value="Game">Game</option>
+</select>
+*/}
+
+
+                {/* Game-only mode: type hidden, no user interaction */}
+                <input type="hidden" value="Game" />
+
             </label>
 
             {mediaType === "Game" && (
