@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { fetchGameDetails } from "../services/igdbService";
-import { Game } from "../services/igdbService";
+import debounce from "lodash.debounce";
+import { fetchGameDetails, Game } from "../services/igdbService";
+
 
 
 const AddMediaForm = () => {
@@ -11,26 +12,54 @@ const AddMediaForm = () => {
     const [mediaTitle, setMediaTitle] = useState("");
     const [mediaStatus, setMediaStatus] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState<Game[]>([]);
+    const [showDropdown, setShowDropdown] = useState(false);
     const [gameData, setGameData] = useState<Game | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    const searchContainerRef = useRef<HTMLDivElement>(null);
+    const debouncedFetch = useRef(
+        debounce(async (query: string) => {
+            const results = await fetchGameDetails(query);
+            setSearchResults(results);
+            setShowDropdown(true);
+        }, 300)
+    ).current;
 
+    useEffect(() => {
+        if (mediaType === "Game" && searchQuery.length > 1) {
+            debouncedFetch(searchQuery);
+        } else {
+            setSearchResults([]);
+            setShowDropdown(false);
+        }
+    }, [searchQuery, mediaType]);
 
-
-    const handleSearch = async () => {
-        if (mediaType !== "Game" || !searchQuery.trim()) return;
-        const data = await fetchGameDetails(searchQuery);
-        setGameData(data?.[0] || null); // Auto-fill with first result
-        setMediaTitle(data?.[0]?.name || "");
+    const handleSelectGame = (game: Game) => {
+        setGameData(game);
+        setMediaTitle(game.name);
+        setSearchQuery(game.name);
+        setShowDropdown(false);
     };
 
+    const handleClickOutside = (event: MouseEvent) => {
+        if (
+            searchContainerRef.current &&
+            !searchContainerRef.current.contains(event.target as Node)
+        ) {
+            setShowDropdown(false);
+        }
+    };
 
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         try {
-
             const mediaTypeMap: Record<string, number> = {
                 Movie: 0,
                 Show: 1,
@@ -38,19 +67,13 @@ const AddMediaForm = () => {
                 Game: 3
             };
 
-            const mediaStatusMap: Record<string, number> =
-            {
+            const mediaStatusMap: Record<string, number> = {
                 Finished: 0,
                 Started: 1,
                 Backlogged: 2,
                 Skipped: 3,
                 Refunded: 4
-
-
             };
-            const formattedMediaType = mediaTypeMap[mediaType];
-            const formattedMediaStatus = mediaStatusMap[mediaStatus];
-
 
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/media/add`, {
                 mediaType: mediaTypeMap[mediaType],
@@ -60,12 +83,11 @@ const AddMediaForm = () => {
                 userId: "checkanator"
             });
 
-
-
-            console.log("Media added:", response.data); 
+            console.log("Media added:", response.data);
 
             window.dispatchEvent(new Event("mediaUpdated"));
-            // Reset form after successful submission
+
+            // Reset form
             setMediaType("");
             setMediaTitle("");
             setMediaStatus("");
@@ -77,16 +99,18 @@ const AddMediaForm = () => {
         }
     };
 
-
-
-
     return (
         <form onSubmit={handleSubmit} className="p-4 border rounded-md">
             <h2 className="text-lg font-bold mb-4">Add New Media</h2>
 
             <label className="block mb-2">
                 Media Type:
-                <select value={mediaType} onChange={(e) => setMediaType(e.target.value)} className="block w-full mt-1 p-2 border rounded" required>
+                <select
+                    value={mediaType}
+                    onChange={(e) => setMediaType(e.target.value)}
+                    className="block w-full mt-1 p-2 border rounded"
+                    required
+                >
                     <option value="" disabled>Select Media Type</option>
                     <option value="Movie">Movie</option>
                     <option value="Show">Show</option>
@@ -97,27 +121,41 @@ const AddMediaForm = () => {
 
             {mediaType === "Game" && (
                 <>
-                    <label className="block mb-2">
-                        Game Search:
+                    <label className="block mb-2">Game Search:</label>
+                    <div ref={searchContainerRef} className="relative mb-4">
                         <input
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="block w-full mt-1 p-2 border rounded"
-                            placeholder="Enter game name"
-                            required
+                            placeholder="Start typing a game..."
+                            autoComplete="off"
                         />
-                    </label>
-                    <button type="button" onClick={handleSearch} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                        Search Game
-                    </button>
 
-                    {/*  Auto-fill game details */}
+                        {showDropdown && searchResults.length > 0 && (
+                            <ul className="absolute z-10 w-full bg-white border rounded shadow mt-1 max-h-48 overflow-y-auto">
+                                {searchResults.map((game) => (
+                                    <li
+                                        key={game.id}
+                                        onClick={() => handleSelectGame(game)}
+                                        className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
+                                    >
+                                        {game.name}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+
                     {gameData && (
-                        <div className="mt-4">
+                        <div className="mt-2">
                             <h3 className="text-lg font-semibold">{gameData.name}</h3>
-                            {gameData.cover?.url && <img src={gameData.cover.url} alt={gameData.name} className="mt-2 w-32 h-32" />}
-                            <p className="text-sm text-gray-700">{gameData.summary || "No description available."}</p>
+                            {gameData.cover?.url && (
+                                <img src={gameData.cover.url} alt={gameData.name} className="mt-2 w-32 h-32 object-cover" />
+                            )}
+                            <p className="text-sm text-gray-700">
+                                {gameData.summary || "No description available."}
+                            </p>
                         </div>
                     )}
                 </>
@@ -132,13 +170,18 @@ const AddMediaForm = () => {
                     className="block w-full mt-1 p-2 border rounded"
                     placeholder="Enter the title"
                     required
-                    disabled={mediaType === "Game"} //  Auto-filled for games
+                    disabled={mediaType === "Game"}
                 />
             </label>
 
             <label className="block mb-4">
                 Media Status:
-                <select value={mediaStatus} onChange={(e) => setMediaStatus(e.target.value)} className="block w-full mt-1 p-2 border rounded" required>
+                <select
+                    value={mediaStatus}
+                    onChange={(e) => setMediaStatus(e.target.value)}
+                    className="block w-full mt-1 p-2 border rounded"
+                    required
+                >
                     <option value="" disabled>Select Status</option>
                     <option value="Finished">Finished</option>
                     <option value="Started">Started</option>
@@ -152,10 +195,9 @@ const AddMediaForm = () => {
                 Add Media
             </button>
 
-            {error && <p className="text-red-500">{error}</p>}
+            {error && <p className="text-red-500 mt-2">{error}</p>}
         </form>
     );
 };
 
 export default AddMediaForm;
-

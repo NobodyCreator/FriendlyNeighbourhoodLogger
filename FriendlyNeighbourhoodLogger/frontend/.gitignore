@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#Twitch token generator
+FriendlyNeighbourhoodLogger/scripts/Get-TwitchToken.ps1

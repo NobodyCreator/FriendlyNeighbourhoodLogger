@@ -46,7 +46,7 @@ namespace FriendlyNeighbourhoodLogger.Controllers
         public IActionResult AddMedia([FromBody] Media media)
         {
             if (!Enum.TryParse<MediaType>(media.MediaType.ToString(), true, out var parsedMediaType))
-            {
+            { 
                 return BadRequest("Invalid MediaType. Use 'Movie', 'Show', 'Book', or 'Game'.");
             }
 

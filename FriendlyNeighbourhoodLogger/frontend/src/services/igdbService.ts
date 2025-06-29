@@ -15,21 +15,10 @@ export interface Game {
 
 export const fetchGameDetails = async (gameName: string): Promise<Game[]> => {
     try {
-        const response = await axios.post<Game[]>(
-            IGDB_API_URL,
-            `search "${gameName}"; fields id, name, summary, genres.name, cover.url, release_dates.date;`,
-            {
-                headers: {
-                    "Client-ID": CLIENT_ID,
-                    "Authorization": `Bearer ${ACCESS_TOKEN}`
-                }
-            }
-        );
-
-        console.log("Game Data:", response.data);
+        const response = await axios.get<Game[]>(`/api/igdb?search=${encodeURIComponent(gameName)}`);
         return response.data;
     } catch (error) {
-        console.error("Error fetching game details:", error);
+        console.error("Proxy API error:", error);
         return [];
     }
 };

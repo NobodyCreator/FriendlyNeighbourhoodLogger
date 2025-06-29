@@ -4,7 +4,6 @@ import axios from 'axios';
 import MediaModal from "../src/components/MediaModal";
 import AddMediaForm from "../src/components/AddMediaForm";
 import EditMediaModal from "../src/components/EditMediaModal";
-import SearchGames from "../src/components/SearchGames";
 
 interface Media {
     id: number;
@@ -26,7 +25,6 @@ const MediaPage: React.FC = () => {
         return (
             <div>
                 <h1>Media Tracker</h1>
-                <SearchGames /> {/* Embed search functionality here */}
             </div>
         );
     };
