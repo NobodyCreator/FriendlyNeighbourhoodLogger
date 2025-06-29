@@ -1,8 +1,8 @@
 export const mediaTypeLabels: Record<number, string> = {
-    0: "Game",
-    1: "Movie",
+    0: "Movie",
+    1: "Show",
     2: "Book",
-    3: "Show"
+    3: "Game"
 };
 
 export const mediaStatusLabels: Record<number, string> = {

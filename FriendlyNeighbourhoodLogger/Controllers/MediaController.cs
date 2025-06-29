@@ -45,17 +45,21 @@ namespace FriendlyNeighbourhoodLogger.Controllers
         [HttpPost("add")]
         public IActionResult AddMedia([FromBody] Media media)
         {
-            if (!Enum.TryParse<MediaType>(media.MediaType.ToString(), true, out var parsedMediaType))
-            { 
-                return BadRequest("Invalid MediaType. Use 'Movie', 'Show', 'Book', or 'Game'.");
-            }
+            //  Remove this entire validation block:
+            // if (!Enum.TryParse<MediaType>(media.MediaType.ToString(), true, out var parsedMediaType))
+            // {
+            //     return BadRequest("Invalid MediaType...");
+            // }
 
-            media.MediaType = parsedMediaType;
+            // This is no longer needed as it's redundant:
+            // media.MediaType = parsedMediaType;
+
             _context.Media.Add(media);
             _context.SaveChanges();
 
             return CreatedAtAction(nameof(GetAllMedia), new { id = media.Id }, media);
         }
+
 
 
         [HttpPut("{id}")]

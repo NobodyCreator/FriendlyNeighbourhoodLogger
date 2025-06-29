@@ -16,6 +16,7 @@ const AddMediaForm = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [gameData, setGameData] = useState<Game | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [dateFinished, setDateFinished] = useState<string>("");
 
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const debouncedFetch = useRef(
@@ -52,6 +53,15 @@ const AddMediaForm = () => {
     };
 
     useEffect(() => {
+        if (mediaStatus === "Finished") {
+            setDateFinished(new Date().toISOString().split("T")[0]);
+        } else {
+            setDateFinished("");
+        }
+    }, [mediaStatus]);
+
+
+    useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
@@ -79,7 +89,10 @@ const AddMediaForm = () => {
                 mediaType: mediaTypeMap[mediaType],
                 mediaTitle,
                 mediaStatus: mediaStatusMap[mediaStatus],
-                dateFinished: new Date().toISOString(),
+                ...(mediaStatus === "Finished" && dateFinished
+                    ? { dateFinished: new Date(dateFinished).toISOString() }
+                    : {}),
+
                 userId: "checkanator"
             });
 
@@ -160,6 +173,21 @@ const AddMediaForm = () => {
                     )}
                 </>
             )}
+
+            {mediaStatus === "Finished" && (
+                <label className="block mb-4">
+                    Completion Date:
+                    <input
+                        type="date"
+                        value={dateFinished}
+                        onChange={(e) => setDateFinished(e.target.value)}
+                        className="block w-full mt-1 p-2 border rounded"
+                        max={new Date().toISOString().split("T")[0]}
+                        required
+                    />
+                </label>
+            )}
+
 
             <label className="block mb-2">
                 Media Title:

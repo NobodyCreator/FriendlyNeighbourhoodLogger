@@ -15,9 +15,9 @@ namespace FriendlyNeighbourhoodLogger
         [Required]
         public required  string MediaTitle { get; set; }
 
-        public MediaStatus MediaStatus { get; set; } 
+        public MediaStatus MediaStatus { get; set; }
 
-        public DateTime DateFinished { get; set; }
+        public DateTime? DateFinished { get; set; }
 
         [Required]
         [ForeignKey("User")]
