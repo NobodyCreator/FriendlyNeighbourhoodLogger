@@ -22,6 +22,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         // First Attempt — normal search
         const searchBody = `search "${query}";\nfields ${baseFields};\nlimit 5;`;
+        console.log(" IGDB Headers:", {
+            "Client-ID": process.env.TWITCH_CLIENT_ID,
+            "Authorization": `Bearer ${process.env.TWITCH_ACCESS_TOKEN}`,
+        });
+
         let response = await axios.post("https://api.igdb.com/v4/games", searchBody, { headers });
 
         // If no results, try fuzzy match using `where name ~ "*...*"`
